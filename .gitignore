@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# Helm dependencies
+charts/*/charts/
+
+# Helm cache
+*.tgz
+
+# SQLite
+*.db
