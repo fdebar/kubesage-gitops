@@ -11,11 +11,7 @@ spec:
       path: charts/monitoring
       helm:
         valueFiles:
-          - $values/environments/dev/alloy.yaml
-          - $values/environments/dev/grafana.yaml
-          - $values/environments/dev/loki.yaml
-          - $values/environments/dev/open-telemetry.yaml
-          - $values/environments/dev/tempo.yaml
+          - $values/environments/dev/monitoring.yaml
     - repoURL: https://github.com/fdebar/kubesage-gitops.git
       targetRevision: main
       ref: values
