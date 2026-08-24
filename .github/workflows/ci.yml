@@ -40,5 +40,11 @@ jobs:
             -f environments/dev/monitoring.yaml \
             > /tmp/monitoring.yaml
 
-      - name: Validate monitoring manifests
-        run: kubeconform -strict -summary /tmp/monitoring.yaml
+      - name: Validate Kubernetes manifests
+        run: |
+          kubeconform \
+            -strict \
+            -summary \
+            -schema-location default \
+            -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
+            /tmp/monitoring.yaml
