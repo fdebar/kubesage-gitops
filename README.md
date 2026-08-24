@@ -65,10 +65,8 @@ kubesage-gitops/
 │
 └── environments/
     └── dev/
-        ├── alloy.yaml
-        ├── loki.yaml
-        ├── prometheus.yaml
-        └── ...
+        ├── kubesage.yaml
+        └── monitoring.yaml
 ```
 
 ### `applications/`
@@ -172,13 +170,7 @@ From the monitoring chart directory:
 cd charts/monitoring
 helm dependency update
 helm lint .
-helm template monitoring . \
-  -f ../../environments/dev/alloy.yaml \
-  -f ../../environments/dev/grafana.yaml \
-  -f ../../environments/dev/kubesage.yaml \
-  -f ../../environments/dev/loki.yaml \
-  -f ../../environments/dev/open-telemetry.yaml \
-  -f ../../environments/dev/tempo.yaml
+helm template monitoring . -f ../../environments/dev/monitoring.yaml
 ```
 
 ### Deploy with Argo CD
