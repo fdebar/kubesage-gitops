@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   sources:
-    - repoURL: git@github.com:fdebar/kubesage-gitops.git
+    - repoURL: https://github.com/fdebar/kubesage-gitops.git
       targetRevision: main
       path: charts/monitoring
       helm:
@@ -16,7 +16,7 @@ spec:
           - $values/environments/dev/loki.yaml
           - $values/environments/dev/open-telemetry.yaml
           - $values/environments/dev/tempo.yaml
-    - repoURL: git@github.com:fdebar/kubesage-gitops.git
+    - repoURL: https://github.com/fdebar/kubesage-gitops.git
       targetRevision: main
       ref: values
   destination:
