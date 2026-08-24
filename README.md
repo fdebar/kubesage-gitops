@@ -170,11 +170,15 @@ From the monitoring chart directory:
 
 ```bash
 cd charts/monitoring
-
 helm dependency update
 helm lint .
 helm template monitoring . \
-  --values ../../environments/dev/values.yaml
+  -f ../../environments/dev/alloy.yaml \
+  -f ../../environments/dev/grafana.yaml \
+  -f ../../environments/dev/kubesage.yaml \
+  -f ../../environments/dev/loki.yaml \
+  -f ../../environments/dev/open-telemetry.yaml \
+  -f ../../environments/dev/tempo.yaml
 ```
 
 ### Deploy with Argo CD
