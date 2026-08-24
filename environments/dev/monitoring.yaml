@@ -80,15 +80,17 @@ alloy:
         }
 
 kube-prometheus-stack:
+  prometheus:
+    enabled: true
+  alertmanager:
+    enabled: true
+  kubeStateMetrics:
+    enabled: true
+  nodeExporter:
+    enabled: true
   grafana:
-    adminUser: admin
-    adminPassword: kubesage-admin
-    service:
-      type: ClusterIP
-      port: 80
-    persistence:
-      enabled: true
-      size: 5Gi
+    enabled: true
+    adminUser: kubesage-admin
     additionalDataSources:
       - name: Loki
         uid: loki
@@ -135,19 +137,6 @@ kube-prometheus-stack:
       analytics:
         reporting_enabled: false
 
-kube-prometheus-stack:
-  grafana:
-    enabled: true
-  prometheus:
-    enabled: true
-    prometheusSpec:
-      retention: 15d
-  alertmanager:
-    enabled: true
-  kubeStateMetrics:
-    enabled: true
-  nodeExporter:
-    enabled: true
 # Loki subchart configuration
 loki:
   deploymentMode: SingleBinary
