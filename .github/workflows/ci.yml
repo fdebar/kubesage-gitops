@@ -1,0 +1,44 @@
+name: GitOps CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate GitOps configuration
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v5
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Setup kubeconform
+        uses: bmuschko/setup-kubeconform@v1
+
+      - name: Build monitoring dependencies
+        working-directory: charts/monitoring
+        run: helm dependency build
+
+      - name: Lint monitoring chart
+        run: helm lint charts/monitoring -f environments/dev/monitoring.yaml
+
+      - name: Render monitoring chart
+        run: |
+          helm template monitoring charts/monitoring \
+            -f environments/dev/monitoring.yaml \
+            > /tmp/monitoring.yaml
+
+      - name: Validate monitoring manifests
+        run: kubeconform -strict -summary /tmp/monitoring.yaml
