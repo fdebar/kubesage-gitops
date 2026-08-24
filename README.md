@@ -1,110 +1,200 @@
-# KubeSage GitOps Installation Guide
+# KubeSage GitOps
 
-This guide provides step-by-step instructions to set up and configure **Argo CD** (Argocd) using GitOps practices. This will help you manage your Kubernetes applications declaratively through version control.
+GitOps configuration and Kubernetes deployment manifests for [KubeSage](https://github.com/fdebar/kubesage).
 
-## Prerequisites
+This repository contains the Argo CD applications, Helm charts, and environment-specific configuration required to deploy and operate KubeSage on Kubernetes.
 
-Before proceeding with the installation, ensure you have the following prerequisites:
+## Architecture
 
-1. **Kubernetes Cluster**: A running Kubernetes cluster. You can use tools like Minikube, Kind, or any other Kubernetes provider.
-2. **kubectl**: The Kubernetes command-line tool must be installed and configured to interact with your cluster.
-3. **Access to Git Repository**: Ensure you have access to a Git repository where you will store your Kubernetes manifests. This example uses GitHub for simplicity.
+The KubeSage project is split across dedicated repositories:
 
-## Installation Steps
+| Repository                                             | Responsibility                                          |
+| ------------------------------------------------------ | ------------------------------------------------------- |
+| [kubesage](https://github.com/fdebar/kubesage)         | Backend, API and KubeSage Helm chart                    |
+| [kubesage-web](https://github.com/fdebar/kubesage-web) | React frontend                                          |
+| **kubesage-gitops**                                    | Argo CD, monitoring stack and environment configuration |
 
-### 1. Install Argo CD
+The deployment flow is:
 
-Argo CD is an open-source continuous delivery tool for Kubernetes that automates the deployment of applications using GitOps principles.
-
-#### Step 1: Create Namespace
-First, create a dedicated namespace for Argo CD:
-
-```bash
-kubectl create ns argocd
+```text
+┌──────────────────────┐
+│      kubesage        │
+│ Backend / API        │
+│ Helm chart           │
+└──────────┬───────────┘
+           │
+           │ Docker image
+           │ Helm chart
+           ▼
+┌──────────────────────┐
+│   kubesage-gitops    │
+│                      │
+│  Argo CD             │
+│  Helm                │
+│  Monitoring          │
+│  Environment config  │
+└──────────┬───────────┘
+           │
+           │ GitOps
+           ▼
+┌──────────────────────┐
+│     Kubernetes       │
+│                      │
+│ KubeSage             │
+│ Prometheus           │
+│ Loki                 │
+│ Tempo                │
+│ Alloy                │
+│ Grafana              │
+└──────────────────────┘
 ```
 
-#### Step 2: Deploy Argo CD Manifests
+## Repository Structure
 
-Apply the official Argo CD manifests from the GitHub repository:
-
-```bash
-kubectl apply \
-    -n argocd \
-    -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```text
+kubesage-gitops/
+├── applications/
+│   ├── kubesage.yaml
+│   └── monitoring.yaml
+│
+├── charts/
+│   └── monitoring/
+│       ├── Chart.yaml
+│       ├── dashboard/
+│       └── templates/
+│
+└── environments/
+    └── dev/
+        ├── alloy.yaml
+        ├── loki.yaml
+        ├── prometheus.yaml
+        └── ...
 ```
 
-### 2. Access the Argo CD Server
+### `applications/`
 
-Argo CD provides a web-based UI for managing your applications. By default, it is secured with basic authentication.
+Contains the [Argo CD](https://argo-cd.readthedocs.io/) `Application` resources used to deploy KubeSage and its monitoring stack.
 
-#### Step 1: Retrieve Initial Password
+* `kubesage.yaml` — KubeSage application
+* `monitoring.yaml` — observability stack
 
-The initial admin password is stored as a Kubernetes secret:
+Argo CD continuously reconciles these applications with the desired state defined in Git.
 
-```bash
-kubectl -n argocd get secret argocd-initial-admin-secret \
-    --template '{{.data.password}}' | base64 -d
+### `charts/monitoring/`
+
+Contains the Helm chart used to deploy the KubeSage observability stack.
+
+The chart currently includes:
+
+* Prometheus
+* Grafana
+* Loki
+* Tempo
+* Alloy
+* OpenTelemetry Collector
+
+It also contains KubeSage-specific Grafana dashboards and Kubernetes resources.
+
+### `environments/`
+
+Contains environment-specific configuration.
+
+Currently:
+
+```text
+environments/
+└── dev/
 ```
 
-**Note**: Remember to replace `argocd` with your actual namespace if it's different.
+Environment configuration is kept separate from the reusable Helm chart so that additional environments can be introduced without duplicating the chart itself.
 
-#### Step 2: Login to Argo CD
+## Observability Stack
 
-Use the retrieved password to log in to the Argo CD server:
+KubeSage uses an integrated observability stack:
 
-```bash
-argocd login localhost:8080 --username admin --password <INITIAL_PASSWORD>
+```text
+                    ┌──────────────┐
+                    │   KubeSage   │
+                    └──────┬───────┘
+                           │
+                ┌──────────┼──────────┐
+                │          │          │
+              Metrics     Logs      Traces
+                │          │          │
+                ▼          ▼          ▼
+           Prometheus     Loki      Tempo
+                │          │          │
+                └──────────┼──────────┘
+                           ▼
+                        Grafana
 ```
 
-**Note**: Ensure that the Argo CD server is accessible on port `8080`. If running on a different host or using an Ingress, adjust the command accordingly.
+All components are deployed and managed through Helm and Argo CD.
 
-### 3. Configure Git Repository
+## GitOps Workflow
 
-Configure your Git repository where your Kubernetes manifests are stored. This example uses GitHub with SSH authentication.
+Changes to the Kubernetes desired state are made through Git.
 
-#### Step 1: Add Git Repository
-
-Add your GitHub repository to Argo CD:
-
-```bash
-argocd repo add git@github.com:fdebar/kubesage.git --ssh-private-key-path ~/.ssh/my-private-key
+```text
+Developer
+    │
+    │ git push
+    ▼
+GitHub
+    │
+    │ reconciliation
+    ▼
+Argo CD
+    │
+    │ apply desired state
+    ▼
+Kubernetes
 ```
 
-**Note**: Replace `git@github.com:fdebar/kubesage.git` with the URL of your Git repository. Ensure that the SSH private key path (`~/.ssh/my-private-key`) is correct.
+Argo CD is responsible for continuously reconciling the cluster with the configuration stored in this repository.
 
-### 4. Deploy Applications
+This keeps the Kubernetes environment declarative, version-controlled, and reproducible.
 
-With Argo CD set up and configured, you can now deploy applications from your Git repository.
+## Local Development
 
-#### Step 1: Add Application
+### Prerequisites
 
-Add an application in Argo CD:
+* Kubernetes cluster
+* `kubectl`
+* Helm
+* Argo CD
 
-```bash
-kubectl apply -f gitops/applications/my-app.yaml
-```
+### Validate the Helm chart
 
-
-#### Step 2: Sync the Application
-
-Sync the application to apply the changes:
+From the monitoring chart directory:
 
 ```bash
-argocd app sync <APP_NAME>
+cd charts/monitoring
+
+helm dependency update
+helm lint .
+helm template monitoring . \
+  --values ../../environments/dev/values.yaml
 ```
 
-**Example:**
+### Deploy with Argo CD
+
+The Argo CD applications can be applied to a cluster with:
 
 ```bash
-argocd app sync my-app
+kubectl apply -f applications/kubesage.yaml
+kubectl apply -f applications/monitoring.yaml
 ```
 
-### 5. Verify Deployment
+Argo CD then manages the lifecycle of the applications.
 
-To ensure that everything is working correctly, verify the status of your applications:
+## Design Principles
 
-```bash
-argocd app list
-```
+This repository follows a few core principles:
 
-You can also access the Argo CD UI at `http://localhost:8080` to visually inspect and manage your deployments.
+* **Git is the source of truth** for Kubernetes configuration.
+* **Argo CD** continuously reconciles the desired state.
+* **Helm** provides reusable and versioned Kubernetes packaging.
+* **Environment-specific configuration** is kept separate from reusable charts.
+* **Application code and deployment configuration** are maintained in separate repositories.
+* Changes to infrastructure are reviewed and version-controlled through Git.
