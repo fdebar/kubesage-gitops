@@ -10,22 +10,16 @@ permissions:
   contents: read
 
 jobs:
-  validate:
-    name: Validate GitOps configuration
+  validate-monitoring:
+    name: Validate Monitoring chart
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout GitOps repository
         uses: actions/checkout@v7
 
       - name: Setup Helm
-        uses: azure/setup-helm@v5
-
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v4
-
-      - name: Setup kubeconform
-        uses: bmuschko/setup-kubeconform@v1
+        uses: azure/setup-helm@v4
 
       - name: Add Helm repositories
         run: |
@@ -34,20 +28,26 @@ jobs:
           helm repo add grafana https://grafana.github.io/helm-charts
           helm repo update
 
-      - name: Build monitoring dependencies
+      - name: Build Helm dependencies
         working-directory: charts/monitoring
         run: helm dependency build
 
       - name: Lint monitoring chart
-        run: helm lint charts/monitoring -f environments/dev/monitoring.yaml
+        working-directory: charts/monitoring
+        run: helm lint .  -f ../../environments/dev/monitoring.yaml
 
       - name: Render monitoring chart
+        working-directory: charts/monitoring
         run: |
-          helm template monitoring charts/monitoring \
-            -f environments/dev/monitoring.yaml \
+          helm template monitoring . \
+            --namespace monitoring \
+            --values ../../environments/dev/monitoring.yaml \
             > /tmp/monitoring.yaml
 
-      - name: Validate Kubernetes manifests
+      - name: Install kubeconform
+        uses: bmuschko/setup-kubeconform@v1
+
+      - name: Validate monitoring manifests
         run: |
           kubeconform \
             -strict \
@@ -55,3 +55,68 @@ jobs:
             -schema-location default \
             -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
             /tmp/monitoring.yaml
+
+  validate-kubesage:
+    name: Validate KubeSage chart
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout GitOps repository
+        uses: actions/checkout@v7
+
+      - name: Checkout KubeSage repository
+        uses: actions/checkout@v7
+        with:
+          repository: fdebar/kubesage
+          path: kubesage-helm
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v5
+
+      - name: Build Helm dependencies
+        working-directory: kubesage-helm/charts/kubesage
+        run: helm dependency build
+
+      - name: Lint KubeSage chart
+        working-directory: kubesage-helm/charts/kubesage
+        run: helm lint .
+
+      - name: Render KubeSage chart
+        working-directory: kubesage-helm/charts/kubesage
+        run: |
+          helm template kubesage . \
+            --namespace kubesage \
+            --values ../../../environments/dev/kubesage.yaml \
+            > /tmp/kubesage.yaml
+
+      - name: Install kubeconform
+        uses: bmuschko/setup-kubeconform@v1
+
+      - name: Validate KubeSage manifests
+        run: |
+          kubeconform \
+            -strict \
+            -summary \
+            -schema-location default \
+            -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
+            /tmp/kubesage.yaml
+
+  validate-argocd:
+    name: Validate Argo CD applications
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout GitOps repository
+        uses: actions/checkout@v7
+
+      - name: Install kubeconform
+        uses: bmuschko/setup-kubeconform@v1
+
+      - name: Validate Argo CD applications
+        run: |
+          kubeconform \
+            -strict \
+            -summary \
+            -schema-location default \
+            -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
+            applications/*.yaml
