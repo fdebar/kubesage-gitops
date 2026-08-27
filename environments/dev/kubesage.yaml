@@ -72,6 +72,7 @@ application:
 # This is the AI configuration
 ai:
   apiKey: ollama
+  existingSecret: ""
   endpoint: http://host.minikube.internal:11434/v1
   provider: ollama
   model: qwen2.5-coder:14b
@@ -93,3 +94,7 @@ observability:
   tempo:
     enabled: true
     url: http://monitoring-alloy.monitoring.svc.cluster.local:4318/v1/traces
+# This is the database configuration
+database:
+  existingSecret: kubesage-postgresql
+  passwordKey: password
