@@ -19,7 +19,7 @@ spec:
       ref: values
   destination:
     server: https://kubernetes.default.svc
-    namespace: kubesage
+    namespace: database
   syncPolicy:
     automated:
       prune: true
