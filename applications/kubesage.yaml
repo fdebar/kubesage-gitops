@@ -25,3 +25,5 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+  source:
+    targetRevision: v0.2.5
