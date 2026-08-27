@@ -3,6 +3,13 @@ alloy:
     type: daemonset
   alloy:
     enableReporting: false
+    resources:
+      requests:
+        cpu: 25m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi
     extraPorts:
       - name: otlp-http
         port: 4318
@@ -82,8 +89,18 @@ alloy:
 kube-prometheus-stack:
   prometheus:
     enabled: true
+    prometheusSpec:
+      retention: 2d
+      retentionSize: 1GB
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
   alertmanager:
-    enabled: true
+    enabled: false
   kubeStateMetrics:
     enabled: true
   nodeExporter:
@@ -91,6 +108,13 @@ kube-prometheus-stack:
   grafana:
     enabled: true
     adminUser: kubesage-admin
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
     additionalDataSources:
       - name: Loki
         uid: loki
@@ -142,6 +166,13 @@ loki:
   deploymentMode: SingleBinary
   singleBinary:
     replicas: 1
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 300m
+        memory: 256Mi
   read:
     replicas: 0
   write:
@@ -186,6 +217,13 @@ loki:
 
 tempo:
   reportingEnabled: false
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
   storage:
     trace:
       backend: local
@@ -194,6 +232,3 @@ tempo:
       protocols:
         grpc:
         http:
-persistence:
-  enabled: true
-  size: 10Gi
