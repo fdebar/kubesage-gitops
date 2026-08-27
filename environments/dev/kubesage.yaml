@@ -96,5 +96,9 @@ observability:
     url: http://monitoring-alloy.monitoring.svc.cluster.local:4318/v1/traces
 # This is the database configuration
 database:
+  host: http://kubesage-postgresql.kubesage.svc.cluster.local
+  port: 5432
+  name: kubesage
+  username: kubesage
   existingSecret: kubesage-postgresql
   passwordKey: password
