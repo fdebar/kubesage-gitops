@@ -7,7 +7,7 @@ spec:
   project: default
   sources:
     - repoURL: https://github.com/fdebar/kubesage.git
-      targetRevision: main
+      targetRevision: v0.2.5
       path: charts/kubesage
       helm:
         valueFiles:
@@ -25,5 +25,3 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
-  source:
-    targetRevision: v0.2.5
