@@ -9,7 +9,7 @@ alloy:
         memory: 64Mi
       limits:
         cpu: 200m
-        memory: 128Mi
+        memory: 256Mi
     extraPorts:
       - name: otlp-http
         port: 4318
@@ -111,10 +111,10 @@ kube-prometheus-stack:
     resources:
       requests:
         cpu: 50m
-        memory: 128Mi
+        memory: 256Mi
       limits:
         cpu: 200m
-        memory: 256Mi
+        memory: 512Mi
     additionalDataSources:
       - name: Loki
         uid: loki
@@ -169,10 +169,10 @@ loki:
     resources:
       requests:
         cpu: 50m
-        memory: 128Mi
+        memory: 256Mi
       limits:
         cpu: 300m
-        memory: 256Mi
+        memory: 512Mi
   read:
     replicas: 0
   write:
