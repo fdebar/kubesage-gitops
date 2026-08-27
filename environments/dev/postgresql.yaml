@@ -1,0 +1,12 @@
+auth:
+  username: kubesage
+  database: kubesage
+  password: kubesage-dev
+  postgresPassword: kubesage-postgres-dev
+
+fullnameOverride: kubesage-postgresql
+
+primary:
+  persistence:
+    enabled: true
+    size: 5Gi

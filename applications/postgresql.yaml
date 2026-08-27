@@ -1,19 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: kubesage
+  name: postgresql
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "10"
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   project: default
   sources:
-    - repoURL: https://github.com/fdebar/kubesage.git
-      targetRevision: v0.3.1
-      path: charts/kubesage
+    - repoURL: https://charts.bitnami.com/bitnami
+      chart: postgresql
+      targetRevision: 18.8.13
       helm:
         valueFiles:
-          - $values/environments/dev/kubesage.yaml
+          - $values/environments/dev/postgresql.yaml
     - repoURL: https://github.com/fdebar/kubesage-gitops.git
       targetRevision: main
       ref: values
@@ -25,5 +25,5 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true
       - ServerSideApply=true
+      - CreateNamespace=true
