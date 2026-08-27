@@ -14,8 +14,8 @@ api:
     # This sets the pull policy for images.
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.3.1"
-    digest: sha256:7b191eca00360f5fc79983227263c8190a9ad07db84a78345e8b076bf5869630
+    tag: "v0.3.3"
+    digest: sha256:675a27b454b21f491ea7564c0f5bac59c5162d73bb5c7d9f1f27f7ad94c6e6ae
   # This is for setting up the resources for the container more information can be found here: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
   resources:
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -51,8 +51,8 @@ worker:
     # This sets the pull policy for images.
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.3.1"
-    digest: sha256:7b191eca00360f5fc79983227263c8190a9ad07db84a78345e8b076bf5869630
+    tag: "v0.3.3"
+    digest: sha256:675a27b454b21f491ea7564c0f5bac59c5162d73bb5c7d9f1f27f7ad94c6e6ae
   # This is for setting up the resources for the container more information can be found here: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
   resources:
     # We usually recommend not to specify default resources and to leave this as a conscious
