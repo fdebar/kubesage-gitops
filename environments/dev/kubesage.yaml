@@ -34,25 +34,21 @@ api:
     type: ClusterIP
     # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
     port: 8000
-
 # This is the web dashboard configuration
 web:
   # This will enable the web dashboard.
   enabled: true
-
   # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
   image:
     repository: ghcr.io/fdebar/kubesage-web
     # This sets the pull policy for images.
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: ""
+    tag: "v0.2.3"
     # This sets the image digest.
-    digest: ""
-
+    digest: "sha256:2d0621b85a86adc1313f88ec0d6bc7e7e3da7d40ef1336cd0f4f0147c3bb7264"
   service:
     port: 80
-
   # This is for setting up the resources for the container more information can be found here: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
   resources:
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -65,7 +61,6 @@ web:
     requests:
       cpu: 50m
       memory: 256Mi
-
 # This is the worker configuration
 worker:
   # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
