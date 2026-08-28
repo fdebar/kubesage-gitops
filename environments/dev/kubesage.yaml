@@ -129,3 +129,6 @@ database:
   username: kubesage
   existingSecret: kubesage-postgresql
   passwordKey: password
+# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+ingress:
+  enabled: true
