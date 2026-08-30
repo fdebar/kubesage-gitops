@@ -260,3 +260,4 @@ tempo:
         metrics_generator:
           processors:
             - span-metrics
+            - local-blocks
