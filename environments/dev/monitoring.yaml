@@ -249,3 +249,8 @@ tempo:
         remote_write: []
       traces_storage:
         path: "/var/tempo/traces"
+    overrides:
+      defaults:
+        metrics_generator:
+          processors:
+            - span-metrics
