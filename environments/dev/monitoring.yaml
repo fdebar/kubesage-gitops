@@ -92,6 +92,7 @@ kube-prometheus-stack:
     prometheusSpec:
       retention: 2d
       retentionSize: 1GB
+      enableRemoteWriteReceiver: true
       resources:
         requests:
           cpu: 100m
@@ -232,3 +233,24 @@ tempo:
       protocols:
         grpc:
         http:
+  metricsGenerator:
+    enabled: true
+    config:
+      registry:
+        collection_interval: 15s
+        external_labels:
+          source: tempo
+      processor:
+        span_metrics:
+          dimensions:
+            - service.name
+            - service.namespace
+      storage:
+        path: /var/tempo/wal
+        remote_write:
+          - url: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090/api/v1/write
+global_overrides:
+  defaults:
+    metrics_generator:
+      processors:
+        - span-metrics
