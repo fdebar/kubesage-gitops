@@ -235,22 +235,16 @@ tempo:
         http:
   metricsGenerator:
     enabled: true
-    config:
-      registry:
-        collection_interval: 15s
-        external_labels:
-          source: tempo
-      processor:
-        span_metrics:
-          dimensions:
-            - service.name
-            - service.namespace
-      storage:
-        path: /var/tempo/wal
-        remote_write:
-          - url: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090/api/v1/write
-global_overrides:
-  defaults:
-    metrics_generator:
-      processors:
-        - span-metrics
+    remoteWriteUrl: "http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090/api/v1/write"
+    processor:
+      span_metrics:
+        enable_target_info: true
+    registry:
+      collection_interval: 15s
+      external_labels:
+        source: tempo
+    storage:
+      path: "/var/tempo/metrics"
+      remote_write: []
+    traces_storage:
+      path: "/var/tempo/traces"
