@@ -9,7 +9,7 @@ spec:
   project: default
   sources:
     - repoURL: https://github.com/fdebar/kubesage.git
-      targetRevision: v0.3.6
+      targetRevision: v0.4.0
       path: charts/kubesage
       helm:
         valueFiles:
