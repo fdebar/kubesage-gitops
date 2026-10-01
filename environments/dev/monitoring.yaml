@@ -98,8 +98,8 @@ kube-prometheus-stack:
           cpu: 100m
           memory: 256Mi
         limits:
-          cpu: 500m
-          memory: 512Mi
+          cpu: 1000m
+          memory: 2Gi
   alertmanager:
     enabled: false
   kubeStateMetrics:
@@ -111,11 +111,11 @@ kube-prometheus-stack:
     adminUser: kubesage-admin
     resources:
       requests:
-        cpu: 50m
-        memory: 256Mi
+        cpu: 100m
+        memory: 512Mi
       limits:
-        cpu: 200m
-        memory: 1024Mi
+        cpu: 500m
+        memory: 2Gi
     additionalDataSources:
       - name: Loki
         uid: loki
