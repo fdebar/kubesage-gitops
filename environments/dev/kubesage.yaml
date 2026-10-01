@@ -44,9 +44,9 @@ web:
     # This sets the pull policy for images.
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.3.0"
+    tag: "v0.4.0"
     # This sets the image digest.
-    digest: "sha256:4b64bb00991d7588a717fbe2ddd3b66f6b2c9f8c1b645dbb8a3dfc347cb9956c"
+    digest: "sha256:84b416d0132674042487b73f89ff8c054dec61cb7a64cb76ad147d099bb70f7e"
   service:
     port: 80
   # This is for setting up the resources for the container more information can be found here: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
